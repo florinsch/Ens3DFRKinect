@@ -1,0 +1,1 @@
+/media/Stuff/Documents/uni/thesis/facerecord/build/CMakeFiles/face_app.dir
