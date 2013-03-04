@@ -17,8 +17,6 @@ face_detection_apps_utils.h
 /media/Stuff/Documents/uni/thesis/facerecord/source/face_detection_apps_utils.h
 pcl/console/parse.h
 -
-pcl/features/integral_image_normal.h
--
 pcl/io/pcd_io.h
 -
 pcl/filters/crop_box.h
@@ -27,11 +25,9 @@ pcl/segmentation/extract_clusters.h
 -
 pcl/common/transforms.h
 -
-pcl/filters/approximate_voxel_grid.h
--
-pcl/filters/voxel_grid.h
--
 pcl/keypoints/uniform_sampling.h
+-
+pcl/registration/registration.h
 -
 pcl/registration/icp.h
 -
@@ -25400,14 +25396,6 @@ pcl/search/pcl_search.h
 cstddef
 -
 
-/usr/local/include/pcl-1.7/pcl/features/impl/integral_image_normal.hpp
-pcl/features/boost.h
--
-pcl/features/integral_image_normal.h
--
-pcl/features/normal_3d.h
--
-
 /usr/local/include/pcl-1.7/pcl/features/impl/normal_3d.hpp
 pcl/features/normal_3d.h
 -
@@ -25422,18 +25410,6 @@ vector
 pcl/features/impl/integral_image2D.hpp
 -
 
-/usr/local/include/pcl-1.7/pcl/features/integral_image_normal.h
-pcl/point_cloud.h
--
-pcl/point_types.h
--
-pcl/features/feature.h
--
-pcl/features/integral_image2D.h
--
-pcl/features/impl/integral_image_normal.hpp
--
-
 /usr/local/include/pcl-1.7/pcl/features/normal_3d.h
 pcl/features/feature.h
 -
@@ -25444,14 +25420,6 @@ pcl/features/impl/normal_3d.hpp
 pcl/features/normal_3d.h
 -
 pcl/features/impl/normal_3d_omp.hpp
--
-
-/usr/local/include/pcl-1.7/pcl/filters/approximate_voxel_grid.h
-pcl/filters/boost.h
--
-pcl/filters/filter.h
--
-pcl/filters/impl/approximate_voxel_grid.hpp
 -
 
 /usr/local/include/pcl-1.7/pcl/filters/boost.h
@@ -25510,12 +25478,6 @@ pcl/filters/filter.h
 pcl/filters/impl/filter_indices.hpp
 -
 
-/usr/local/include/pcl-1.7/pcl/filters/impl/approximate_voxel_grid.hpp
-pcl/common/common.h
--
-pcl/filters/approximate_voxel_grid.h
--
-
 /usr/local/include/pcl-1.7/pcl/filters/impl/crop_box.hpp
 pcl/filters/crop_box.h
 -
@@ -25526,24 +25488,6 @@ pcl/pcl_macros.h
 
 /usr/local/include/pcl-1.7/pcl/filters/impl/filter_indices.hpp
 pcl/pcl_macros.h
--
-
-/usr/local/include/pcl-1.7/pcl/filters/impl/voxel_grid.hpp
-pcl/common/common.h
--
-pcl/common/io.h
--
-pcl/filters/voxel_grid.h
--
-
-/usr/local/include/pcl-1.7/pcl/filters/voxel_grid.h
-pcl/filters/boost.h
--
-pcl/filters/filter.h
--
-map
--
-pcl/filters/impl/voxel_grid.hpp
 -
 
 /usr/local/include/pcl-1.7/pcl/for_each_type.h

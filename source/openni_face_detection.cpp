@@ -15,17 +15,14 @@
 #include "openni_frame_source.h"
 #include "face_detection_apps_utils.h"
 #include <pcl/console/parse.h>
-#include <pcl/features/integral_image_normal.h>
-
 #include <pcl/io/pcd_io.h>
+
 #include <pcl/filters/crop_box.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/common/transforms.h>
-
-#include <pcl/filters/approximate_voxel_grid.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/keypoints/uniform_sampling.h>
 
+#include <pcl/registration/registration.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/icp_nl.h>
 
@@ -34,6 +31,7 @@
 #include <pcl/features/normal_3d_omp.h>
 
 #include <pcl/surface/mls.h>
+
 
 // pcl::PointWithScale : 3-D position and scale.
 // pcl::PointWithViewpoint : Euclidean xyz coordinates + viewpoint
@@ -144,13 +142,12 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
   // ------------------- parameter editing here -------------------
   pcl::CropBox<PointType> cbx;
 
-  float radius = 0.003;
   pcl::UniformSampling<PointType> us;
-  us.setRadiusSearch (radius);
+  us.setRadiusSearch (0.003);
 
   pcl::EuclideanClusterExtraction<PointType> xclstrs;
-  //xclstrs.setClusterTolerance(radius+0.0001); // 1cm = 0.01
-  xclstrs.setMinClusterSize(400);
+//  xclstrs.setClusterTolerance(0.003); // 1cm = 0.01
+  xclstrs.setMinClusterSize(1000);
   xclstrs.setMaxClusterSize(20000);
 
   pcl::IterativeClosestPoint<PointType, PointType> icp;
@@ -159,8 +156,9 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
   icp.setTransformationEpsilon(1e-8);
   icp.setEuclideanFitnessEpsilon(0.0001);
 
-  pcl::VoxelGrid<PointType> vgrid;
-  vgrid.setLeafSize(0.01, 0.01, 0.01);
+  pcl::NormalEstimationOMP<PointType, pcl::Normal> ne;
+  ne.setRadiusSearch (0.03);
+  ne.setViewPoint(15,15,-215);
 
   PointType minPt, maxPt;
   CloudPtr face(new Cloud);
@@ -179,10 +177,6 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
     pcl::getMinMax3D(*mask, minPt, maxPt);
     pcl::demeanPointCloud(*mask, Eigen::Vector4f(minPt.x, minPt.y, minPt.z, 1), *mask);
 
-    // remembers leaf layout (grid) for the processing of normals in the same points
-    vgrid.setInputCloud(mask);
-    vgrid.setSaveLeafLayout(true); //TODO: try to toggle off
-
     // uniform sampling for faster ICP
     us.setInputCloud (mask);
     pcl::PointCloud<int> sampled_indices;
@@ -191,6 +185,11 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
 
     // set target for icp
     icp.setInputTarget(mask);
+
+    // compute normals
+//    ne.setInputCloud (mask);
+//    pcl::PointCloud<pcl::Normal>::Ptr mask_normals (new pcl::PointCloud<pcl::Normal>);
+//    ne.compute (*mask_normals);
   }
 
   // main loop
@@ -235,7 +234,7 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
       cbx.filter(*face);
 
       // compute cloud resolution
-      //double resolution = computeCloudResolution(face);
+      double resolution = computeCloudResolution(face);
 
       // pre-normalize pose according to head pose detector
       Eigen::Vector3f vec_y = Eigen::Vector3f::UnitY();
@@ -265,6 +264,14 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
       // create new search tree
       pcl::search::KdTree<PointType>::Ptr tree (new pcl::search::KdTree<PointType> ());
 
+      // perform euclidean clustering (remove neck, artifacts)
+      xclstrs.setClusterTolerance(resolution * 2.2);
+      xclstrs.setInputCloud(face);
+      xclstrs.setSearchMethod(tree);
+      std::vector<pcl::PointIndices> clstrs;
+      xclstrs.extract(clstrs);
+      pcl::copyPointCloud(*face, clstrs, *face);
+
       // uniform sampling
       us.setInputCloud (face);
       us.setSearchMethod(tree);
@@ -273,38 +280,29 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
       CloudPtr face_down (new Cloud);
       pcl::copyPointCloud (*face, sampled_indices.points, *face_down);
 
-      double resolution = computeCloudResolution(face_down);
-
-      // perform euclidean clustering (remove neck, artifacts)
-      xclstrs.setClusterTolerance(radius+0.0001); // 1cm = 0.01
-      xclstrs.setInputCloud(face_down);
-      xclstrs.setSearchMethod(tree);
-      std::vector<pcl::PointIndices> clstrs;
-      xclstrs.extract(clstrs);
-      pcl::copyPointCloud(*face_down, clstrs, *face_down);
-
       // moving least squares
-//        MovingLeastSquares<PointType, PointType> mls;
-//        // Set parameters
-//        mls.setInputCloud (face);
-//        mls.setPolynomialFit (true);
-//        mls.setSearchMethod (tree);
-//        mls.setSearchRadius (0.03);
-//        //mls.setUpsamplingRadius(0.1);
-//        // Reconstruct
-//        cout <<"MLS";
-//        mls.process(*face);
-      // Concatenate fields for saving
-      //PointCloud<PointNormal> mls_cloud;
-      //pcl::concatenateFields (mls_points, *mls_normals, mls_cloud);
+//      pcl::MovingLeastSquares<PointType, pcl::PointNormal> mls;
+//      mls.setInputCloud (face);
+//      mls.setPolynomialFit (true);
+//      mls.setSearchMethod (tree);
+//      mls.setSearchRadius (0.02);
+//      pcl::PointCloud<pcl::PointNormal> mls_points;
+//      mls.process (mls_points);
+//      CloudPtr mlscloud (new Cloud);
+//      pcl::copyPointCloud(mls_points, *mlscloud);
+
+      // compute normals
+//      ne.setInputCloud (face_down);
+//      pcl::PointCloud<pcl::Normal>::Ptr face_normals (new pcl::PointCloud<pcl::Normal>);
+//      ne.compute (*face_normals);
 
       // ICP alignment (pose normalization)
       if(camera.isEnabledICP())
       {
         icp.setInputSource(face_down);
         // try to start from last position
-        if(icp.getFitnessScore() < 0.0003)
-          pcl::transformPointCloud<PointType>(*face_down, *face_down, icp.getFinalTransformation());
+//        if(icp.getFitnessScore() < 0.0003)
+//          pcl::transformPointCloud<PointType>(*face_down, *face_down, icp.getFinalTransformation());
         icp.align(*face_down);
 
         if(icp.hasConverged())
@@ -314,32 +312,16 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
         }
       }
 
-      // resample points for normals
-//      vgrid.setInputCloud(face);
-//      CloudPtr grid (new Cloud);
-//      vgrid.filter(*grid); // todo: figure out why normals dont fall in same place
-//
-//      // Create the normal estimation class, and pass the input dataset to it
-//      pcl::NormalEstimationOMP<PointType, pcl::Normal> ne;
-//      ne.setSearchMethod (tree);
-//      ne.setInputCloud (face_down);
-//      ne.setSearchSurface(face);
-//
-//      pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-//      ne.setRadiusSearch (0.03);
-//      ne.setViewPoint(15,15,-15);
-//      ne.compute (*cloud_normals);
-
       // display extracted cloud
+      pcl::visualization::PointCloudColorHandlerRGBField<PointType> handler_face(face);
       name << "_face";
-      pcl::visualization::PointCloudColorHandlerRGBField<PointType> handler_face(face_down);
-      vis.addPointCloud <PointType>(face_down, handler_face, name.str().c_str(), v2);
+      vis.addPointCloud <PointType>(face, handler_face, name.str().c_str(), v2);
 
-      pcl::visualization::PointCloudColorHandlerRGBField<PointType> handler_facee(face);
-      name << "second";
-      //vis.addPointCloud <PointType>(face, handler_facee, name.str().c_str(), v2);
+//      name << "_down";
+//      pcl::visualization::PointCloudColorHandlerCustom<PointType> handler_faced(face_down, 255, 0, 0);
+//      vis.addPointCloud <PointType>(face_down, handler_faced, name.str().c_str(), v2);
 
-      //vis.addPointCloudNormals<PointType, pcl::Normal> (face_down, cloud_normals, 5, 0.05, "normals", v2);
+//      vis.addPointCloudNormals<PointType, pcl::Normal> (face_down, cloud_normals, 5, 0.05, "normals", v2);
 
       // show some info
       vis.removeAllShapes(v2);
@@ -394,8 +376,8 @@ main(int argc, char ** argv)
   int show_mask = 1;
 
   std::string forest_fn = "../source/forest_example.txt";
-  std::string model_path = "../models/model.pcd";
-  std::string mask_path = "../models/minimalmask.pcd";
+  std::string model_path = "../models/head.pcd";
+  std::string mask_path = "../models/mask.pcd";
   std::string save_dir = ".";
 
   pcl::console::parse_argument(argc, argv, "-forest_fn", forest_fn);
