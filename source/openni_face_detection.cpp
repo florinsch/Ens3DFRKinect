@@ -71,7 +71,7 @@ using std::cout;
 std::string make_name(int counter, const char* suffix, const char* dir)
 {
   char buf[4096];
-  sprintf(buf, "%s/face%04d_%s.pcd", dir, counter, suffix);
+  sprintf(buf, "%s/frame%04d_%s.pcd", dir, counter, suffix);
   return buf;
 }
 
@@ -204,7 +204,7 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
 
     // detect faces
     fdrf.setInputCloud(scene);
-    pcl::ScopeTime t1("Detect faces: ");
+//    pcl::ScopeTime t1("Detect faces: ");
     fdrf.detectFaces();
     std::vector<Eigen::VectorXf> heads;
     fdrf.getDetectedFaces(heads);
@@ -221,10 +221,10 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
     }
 
     // iterate through detected heads
-    std::stringstream name;
     for(size_t i = 0; i < heads.size(); ++i)
     {
-      name << "no_" << i;
+      std::stringstream name;
+      name << "face_" << i;
 
       // crop around predicted centroid from face detector
       float edge = 0.1;
@@ -249,17 +249,17 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
 
       // normalize position (move next to 0, 0 ,0)
       pcl::getMinMax3D(*face, minPt, maxPt);
-      if(minPt.z < 0.4 || minPt.z > 1) continue; // drop false positive too close/far
+      if(minPt.z < 0.4 || minPt.z > 1.3) continue; // drop false positive too close/far
       pcl::demeanPointCloud(*face, Eigen::Vector4f(minPt.x, minPt.y, minPt.z, 1), *face);
 
       // pre-filter out false positives
       pcl::IterativeClosestPoint<PointType, PointType> icp_pre;
       icp_pre.setInputSource(face);
       icp_pre.setInputTarget(mask);
-      std::cout << "Head #" << i
-                << " distance: " << minPt.z
-                << " fitness: " << icp_pre.getFitnessScore() << "\n";
-      if(icp_pre.getFitnessScore() > 0.00035) continue; // terminate for non-faces
+//      std::cout << "Head #" << i
+//                << " distance: " << minPt.z
+//                << " fitness: " << icp_pre.getFitnessScore() << "\n";
+      if(icp_pre.getFitnessScore() > 0.00031) continue; // terminate for non-faces
 
       // create new search tree
       pcl::search::KdTree<PointType>::Ptr tree (new pcl::search::KdTree<PointType> ());
@@ -308,13 +308,12 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
         if(icp.hasConverged())
         {
           pcl::transformPointCloud<PointType>(*face, *face, icp.getFinalTransformation());
-          std::cout << "Final Fitness: " << icp.getFitnessScore() <<"\n";
+          std::cout << "ICP Final Fitness: " << icp.getFitnessScore() <<"\n";
         }
       }
 
       // display extracted cloud
       pcl::visualization::PointCloudColorHandlerRGBField<PointType> handler_face(face);
-      name << "_face";
       vis.addPointCloud <PointType>(face, handler_face, name.str().c_str(), v2);
 
 //      name << "_down";
@@ -346,7 +345,6 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
         filename.append(" was saved to disk");
         vis.addText(filename.c_str(), 10, 10, "recording", v2);
       }
-      name.str(std::string()); // clear stringstream
     }
     
     face_detection_apps_utils::displayHeads(heads, vis, v1);
@@ -393,6 +391,7 @@ main(int argc, char ** argv)
   pcl::console::parse_argument(argc, argv, "-mask_path", mask_path);
   pcl::console::parse_argument(argc, argv, "-icp_iterations", icp_iterations);
   pcl::console::parse_argument(argc, argv, "-save_dir", save_dir);
+  pcl::console::parse_argument(argc, argv, "-s", save_dir);
 
   // create decision forest
   typedef pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType> NodeType;
