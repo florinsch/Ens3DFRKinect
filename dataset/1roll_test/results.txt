@@ -1,0 +1,43 @@
+ESF 5cm, squaredinverse, SOM = 4x4
+
+10 runs accuracy: 0.5748, K = 1
+10 runs accuracy: 0.5835, K = 2
+10 runs accuracy: 0.5752, K = 3
+10 runs accuracy: 0.5735, K = 4
+10 runs accuracy: 0.5722, K = 6
+___________________________________________________________________________
+
+ESF 5cm, squaredinverse, SOM = 3x3
+
+K = 1, 10 runs accuracy: 0.5867
+K = 2, 10 runs accuracy: 0.5861
+K = 3, 10 runs accuracy: 0.5764
+k = 4, 10 runs accuracy: 0.5768
+K = 6, 10 runs accuracy: 0.5748
+
+___________________________________________________________________________
+
+PFH 5cm, squaredinverse, SOM = 3x3
+K = 1, 10 runs accuracy: 0.5077
+
+PFH 5cm, squaredinverse, SOM = 4x4
+10 runs accuracy: 0.5026
+
+___________________________________________________________________________
+
+SHOT 5cm, squaredinverse, SOM = 3x3
+K = 1, 10 runs accuracy: 0.7060
+K = 2, 10 runs accuracy: 0.7032
+K = 3, 10 runs accuracy: 0.6957
+K = 4, 10 runs accuracy: 0.6784
+K = 6, 10 runs accuracy: 0.6603
+
+SHOT 5cm, squaredinverse, SOM = 4x4
+K = 1, 10 runs accuracy: 0.6902
+K = 4, 10 runs accuracy: 0.6814
+K = 6, 10 runs accuracy: 0.6537
+K = 8, 10 runs accuracy: 0.6309
+
+SHOT 5cm, squaredinverse, NO SOM
+
+K = 1, 10 runs accuracy: 0.7288

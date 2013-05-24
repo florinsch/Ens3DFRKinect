@@ -259,7 +259,7 @@ run(pcl::RFFaceDetectorTrainer &fdrf, bool heat_map, bool show_votes,
 //      std::cout << "Head #" << i
 //                << " distance: " << minPt.z
 //                << " fitness: " << icp_pre.getFitnessScore() << "\n";
-      if(icp_pre.getFitnessScore() > 0.00031) continue; // terminate for non-faces
+      if(icp_pre.getFitnessScore() > 0.00035) continue; // terminate for non-faces
 
       // create new search tree
       pcl::search::KdTree<PointType>::Ptr tree (new pcl::search::KdTree<PointType> ());

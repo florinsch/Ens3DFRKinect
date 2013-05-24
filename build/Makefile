@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/Stuff/Documents/uni/thesis/facerecord/source
+CMAKE_SOURCE_DIR = /home/flsk/Documents/uni/thesis/facerecord/source
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/Stuff/Documents/uni/thesis/facerecord/build
+CMAKE_BINARY_DIR = /home/flsk/Documents/uni/thesis/facerecord/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/Stuff/Documents/uni/thesis/facerecord/build/CMakeFiles /media/Stuff/Documents/uni/thesis/facerecord/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/flsk/Documents/uni/thesis/facerecord/build/CMakeFiles /home/flsk/Documents/uni/thesis/facerecord/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/Stuff/Documents/uni/thesis/facerecord/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/flsk/Documents/uni/thesis/facerecord/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -99,41 +99,41 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named face_app
+# Target rules for targets named compute_features
 
 # Build rule for target.
-face_app: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 face_app
-.PHONY : face_app
+compute_features: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 compute_features
+.PHONY : compute_features
 
 # fast build rule for target.
-face_app/fast:
-	$(MAKE) -f CMakeFiles/face_app.dir/build.make CMakeFiles/face_app.dir/build
-.PHONY : face_app/fast
+compute_features/fast:
+	$(MAKE) -f CMakeFiles/compute_features.dir/build.make CMakeFiles/compute_features.dir/build
+.PHONY : compute_features/fast
 
-openni_face_detection.o: openni_face_detection.cpp.o
-.PHONY : openni_face_detection.o
+compute_features.o: compute_features.cpp.o
+.PHONY : compute_features.o
 
 # target to build an object file
-openni_face_detection.cpp.o:
-	$(MAKE) -f CMakeFiles/face_app.dir/build.make CMakeFiles/face_app.dir/openni_face_detection.cpp.o
-.PHONY : openni_face_detection.cpp.o
+compute_features.cpp.o:
+	$(MAKE) -f CMakeFiles/compute_features.dir/build.make CMakeFiles/compute_features.dir/compute_features.cpp.o
+.PHONY : compute_features.cpp.o
 
-openni_face_detection.i: openni_face_detection.cpp.i
-.PHONY : openni_face_detection.i
+compute_features.i: compute_features.cpp.i
+.PHONY : compute_features.i
 
 # target to preprocess a source file
-openni_face_detection.cpp.i:
-	$(MAKE) -f CMakeFiles/face_app.dir/build.make CMakeFiles/face_app.dir/openni_face_detection.cpp.i
-.PHONY : openni_face_detection.cpp.i
+compute_features.cpp.i:
+	$(MAKE) -f CMakeFiles/compute_features.dir/build.make CMakeFiles/compute_features.dir/compute_features.cpp.i
+.PHONY : compute_features.cpp.i
 
-openni_face_detection.s: openni_face_detection.cpp.s
-.PHONY : openni_face_detection.s
+compute_features.s: compute_features.cpp.s
+.PHONY : compute_features.s
 
 # target to generate assembly for a file
-openni_face_detection.cpp.s:
-	$(MAKE) -f CMakeFiles/face_app.dir/build.make CMakeFiles/face_app.dir/openni_face_detection.cpp.s
-.PHONY : openni_face_detection.cpp.s
+compute_features.cpp.s:
+	$(MAKE) -f CMakeFiles/compute_features.dir/build.make CMakeFiles/compute_features.dir/compute_features.cpp.s
+.PHONY : compute_features.cpp.s
 
 # Help Target
 help:
@@ -141,12 +141,12 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... compute_features"
 	@echo "... edit_cache"
-	@echo "... face_app"
 	@echo "... rebuild_cache"
-	@echo "... openni_face_detection.o"
-	@echo "... openni_face_detection.i"
-	@echo "... openni_face_detection.s"
+	@echo "... compute_features.o"
+	@echo "... compute_features.i"
+	@echo "... compute_features.s"
 .PHONY : help
 
 

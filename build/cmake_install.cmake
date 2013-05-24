@@ -1,4 +1,4 @@
-# Install script for directory: /media/Stuff/Documents/uni/thesis/facerecord/source
+# Install script for directory: /home/flsk/Documents/uni/thesis/facerecord/source
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,7 +38,7 @@ ELSE(CMAKE_INSTALL_COMPONENT)
   SET(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 ENDIF(CMAKE_INSTALL_COMPONENT)
 
-FILE(WRITE "/media/Stuff/Documents/uni/thesis/facerecord/build/${CMAKE_INSTALL_MANIFEST}" "")
+FILE(WRITE "/home/flsk/Documents/uni/thesis/facerecord/build/${CMAKE_INSTALL_MANIFEST}" "")
 FOREACH(file ${CMAKE_INSTALL_MANIFEST_FILES})
-  FILE(APPEND "/media/Stuff/Documents/uni/thesis/facerecord/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
+  FILE(APPEND "/home/flsk/Documents/uni/thesis/facerecord/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
 ENDFOREACH(file)
