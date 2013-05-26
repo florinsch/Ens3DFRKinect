@@ -4,8 +4,8 @@ load dataset-8classes-roll.mat
 % importData;
 
 %% choose dataset and parameters
-wrkData = SHOTdata5cm;
-wrkLbls = SHOTlbls5cm;
+wrkData = SHOTdata2cm;
+wrkLbls = SHOTlbls2cm;
 
 somW = 4; % number of cells WxH in SOM
 somH = 4; 
@@ -55,15 +55,30 @@ if (noClusters) < ceil(avgPatchesPerFrame)
     noClusters, avgPatchesPerFrame);
 end
 clear i sums;
-%% get class labels from 2nd row
- data = cellfun(@(s) s(14:end), wrkLbls(:, 2), 'UniformOutput', false);
+%% get class labels from patch grid ordering
+ gridLbls = cellfun(@(s) s(14:end), wrkLbls(:, 2), 'UniformOutput', false);
  
- data = str2double(data);
- data = data + 1;
+ gridLbls = str2double(gridLbls); % convert to double
+ gridLbls = gridLbls + 1; % increment +1 (starts from 0)
  
- noClusters = max(data);
+ noClusters = max(gridLbls);
  
- wrkLbls(:, 4) = num2cell(data);
+ for i = 1:noClusters
+    noclsz(i) = sum(gridLbls == i);
+ end
+ 
+ % keep only clusters with enough observations
+ idx = noclsz >= mean(noclsz) - std(noclsz);
+ noClusters = sum(idx); % add 1 for stray observations
+ 
+ % filter out classes with not enough examples
+ for i = 1:numel(idx)
+     if ~idx(i) 
+         gridLbls(gridLbls == i) = 0;
+     end
+ end
+ 
+ wrkLbls(:, 4) = num2cell(gridLbls);
 %% train SOMs
 % shuffle dataset
 [wrkData, wrkLbls] = shuffleObservations(wrkData, wrkLbls);
@@ -79,9 +94,14 @@ SOM = train(SOM, wrkData', 'useParallel', 'yes');
 wrkLbls(:, 4) = num2cell(vec2ind(SOM(wrkData')))';
 fprintf('done\n'); toc;
 %% split dataset into training / test set
-% noNeighbors = 1; 
-% accuracy = zeros(10, 1);
-% for x = 1:10
+noNeighbors = 1; 
+accuracy = zeros(10, 1);
+for x = 1:10
+
+% remove clusters with 0 as index
+valid = cell2mat(wrkLbls(:, 4)) ~= 0;
+wrkLbls = wrkLbls(valid, :);
+wrkData = wrkData(valid, :);
     
 split = cvpartition(wrkLbls(:, 3), 'k', 10);
 acc = zeros(split.NumTestSets, 1);
@@ -104,8 +124,11 @@ for i = 1:split.NumTestSets
 %     SOM = train(SOM, wrkData', 'useParallel', 'yes');
 %     
 %     trainLbls(:, 4) = num2cell(vec2ind(SOM(trainData')))';
-    
-    KNNs = trainKNNs(trainData, trainLbls, noNeighbors, noClusters);
+
+    % compute valid clusters
+    clusters = unique(cell2mat(trainLbls(:, 4)));
+
+    KNNs = trainKNNs(trainData, trainLbls, noNeighbors, clusters);
     acc(i) = testKNNVotes(KNNs, testData, testLbls, classes);
 
 
@@ -117,9 +140,9 @@ for i = 1:split.NumTestSets
 end
 toc;
 fprintf('\nMean Accuracy for 10-fold crossvalidation: %6.4f\n', mean(acc));
-%     accuracy(x) = mean(acc);
-% end
-% fprintf('\n10 runs accuracy: %6.4f\n', mean(accuracy));
+    accuracy(x) = mean(acc);
+end
+fprintf('\n10 runs accuracy: %6.4f\n', mean(accuracy));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% train somN x somN KNNs based on SOM's clustering

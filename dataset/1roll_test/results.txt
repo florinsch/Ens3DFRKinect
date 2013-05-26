@@ -41,3 +41,13 @@ K = 8, 10 runs accuracy: 0.6309
 SHOT 5cm, squaredinverse, NO SOM
 
 K = 1, 10 runs accuracy: 0.7288
+
+___________________________________________________________________________
+
+using labels from patch separation grid
+
+ESF 2cm K = 1, 10 runs accuracy: 0.5088
+
+PFH 2cm K = 1, 10 runs accuracy: 0.4583
+
+SHOT 2cm K = 1, 10 runs accuracy: 0.5336
