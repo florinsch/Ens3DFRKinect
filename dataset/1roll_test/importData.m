@@ -37,6 +37,15 @@ for i = 1:noSHOT
     progress = progress + 1;
     fprintf('\b\b\b\b\b\b\b\b%05.2f %%\n', progress/totalfiles*100);
 end
+%%
+fprintf('done\nNormalizing each row using L2 norm...');
+noitems = size(ESFdata, 1);
+ESFdata = spdiags(arrayfun(@(idx) norm(ESFdata(idx,:)), 1:noitems)', 0, noitems, noitems) \ ESFdata;
+noitems = size(PFHdata, 1);
+PFHdata = spdiags(arrayfun(@(idx) norm(PFHdata(idx,:)), 1:noitems)', 0, noitems, noitems) \ PFHdata;
+noitems = size(SHOTdata, 1);
+SHOTdata = spdiags(arrayfun(@(idx) norm(SHOTdata(idx,:)), 1:noitems)', 0, noitems, noitems) \ SHOTdata;
+clear items;
 %% 
 fprintf('done\nConverting NaNs and Infs to 0s...');
 ESFdata(~isfinite(ESFdata)) = 0;
