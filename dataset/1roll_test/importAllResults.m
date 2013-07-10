@@ -1,4 +1,4 @@
-function result = importResult(filename, startRow, endRow)
+function result = importAllResults(filename, startRow, endRow)
 %% Initialize variables.
 delimiter = ',';
 if nargin<=2

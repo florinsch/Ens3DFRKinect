@@ -1,4 +1,4 @@
-function plotFeaturesPerClusterType(dataMatrix, figTitle, legendNames)
+function plotFeaturesPerCluster(dataMatrix, figTitle, legendNames)
 figure1 = figure;
 axes1 = axes('Parent',figure1,'XTickLabel',{'1','3','5','7'}, 'XTick',[1 2 3 4]);
 xlim(axes1,[0.9 4.1]);
