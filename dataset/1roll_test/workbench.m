@@ -66,7 +66,7 @@ wrkLbls = patchLabelsFromKmeans(wrkData, wrkLbls, noClusters);
 [wrkData, wrkLbls] = patchLabelsFromGrid(wrkData, wrkLbls);
 %% patch labels from uniform random distribution of cluster labels
 fprintf('\nRandom uniform distribution of cluster labels...'); tic;
-wrkLbls(:, 4) = num2cell(unidrnd(noClusters, noObservations, 1));
+wrkLbls(:, 4) = num2cell(unidrnd(noClusters, noPatches, 1));
 fprintf('done\n'); toc;
 %% List number of hits and seen classes per cluster labeling
 noHits = zeros(1, noClusters); knownClases = noHits;
@@ -140,16 +140,14 @@ F_MicroEns = 2 * (precEns .* recEns) / (precEns + recEns);
 F_MicroOne = 2 * (precOne .* recOne) / (precOne + recOne);
 fprintf('Leave-one-out ENS Sum F1_mu:%6.4f\n', F_MicroEns);
 fprintf('Leave-one-out ONE Sum F1_mu:%6.4f\n', F_MicroOne);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% ensembles
-
 %cv = fitensemble(wrkData, wrkLbls(:,3),'Bag',200,'Tree', 'type','classification','kfold', 10);
 
 bag = fitensemble(wrkData, wrkLbls(:,3),'Bag', 50,'Tree', 'type','classification');
 resbag = strcmp(predict(bag, wrkData), wrkLbls(:, 3));
 
 disp( sum(resbag) / numel(resbag) );
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 % clsz = unique(ESFlbls5cm(:, 3));
 % lblz = zeros(numel(ESFlbls5cm(:, 3)), 1);

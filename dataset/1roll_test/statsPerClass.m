@@ -14,8 +14,8 @@ function [F1score, precision, recall, specificity, accuracy, TP, FP, FN, TN ] = 
     F1score     = zeros(1, noClsz);
     
     for i = 1:noClsz
-        sumH = sum(confMat(i, :));
-        sumV = sum(confMat(:, i));
+        sumH = sum(confMat(i, :)) + eps; % avoid division by 0
+        sumV = sum(confMat(:, i)) + eps;
         
         TP(i) = confMat(i, i);
         FP(i) = sumV - TP(i);
@@ -24,7 +24,7 @@ function [F1score, precision, recall, specificity, accuracy, TP, FP, FN, TN ] = 
         
         accuracy(i) = (TP(i) + TN(i)) / (TP(i) + TN(i) + FP(i) + FN(i));
         % Precision(class) = TP(class) / ( TP(class) + FP(class) )
-        precision(i)   = TP(i) / sumV;
+        precision(i) = TP(i) / sumV ;
         % Recall(class) == Sensitivity(class) == TruePositiveRate(class)
         % = TP(class) / ( TP(class) + FN(class) )
         recall(i) = TP(i) / sumH;
@@ -32,7 +32,7 @@ function [F1score, precision, recall, specificity, accuracy, TP, FP, FN, TN ] = 
         % = TN(class) / ( TN(class) + FP(class) )
         specificity(i) = TN(i) / ( TN(i) + FP(i) );
         % F1-measure = 2 * ( ( P * R ) / (P + R) )
-        F1score(i) = 2*(precision(i) *recall(i)) / (precision(i)+recall(i));
+        F1score(i) = 2*(precision(i)*recall(i)) / (precision(i)+recall(i));
 
         % False positive rate = 1 − specificity = FP / (FP + TN)
         % False negative rate = 1 − sensitivity = FN / (TP + FN)
@@ -46,7 +46,10 @@ function [F1score, precision, recall, specificity, accuracy, TP, FP, FN, TN ] = 
         % per(i,4) true negative rate
         %   = (true negatives)/(all output negatives)
     end
-    specificity(~isfinite(specificity)) = 0;
+%     accuracy(~isfinite(accuracy)) = 0;
+%     precision(~isfinite(precision)) = 0;
+%     recall(~isfinite(recall)) = 0;
+%     specificity(~isfinite(specificity)) = 0;
     % Model Accuracy
     % modelAcc = sum(diag(confMat))/noObs;
 end

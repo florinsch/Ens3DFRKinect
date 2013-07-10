@@ -232,3 +232,4 @@ for i = 1:3
 end
 toc;
 fprintf('\n ---------------- Finished 2cm\n');
+clear fName fid i neighborsK som somH somW;
