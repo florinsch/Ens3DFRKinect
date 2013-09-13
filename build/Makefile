@@ -99,41 +99,41 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named compute_features
+# Target rules for targets named keypoint_features
 
 # Build rule for target.
-compute_features: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 compute_features
-.PHONY : compute_features
+keypoint_features: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 keypoint_features
+.PHONY : keypoint_features
 
 # fast build rule for target.
-compute_features/fast:
-	$(MAKE) -f CMakeFiles/compute_features.dir/build.make CMakeFiles/compute_features.dir/build
-.PHONY : compute_features/fast
+keypoint_features/fast:
+	$(MAKE) -f CMakeFiles/keypoint_features.dir/build.make CMakeFiles/keypoint_features.dir/build
+.PHONY : keypoint_features/fast
 
-compute_features.o: compute_features.cpp.o
-.PHONY : compute_features.o
+keypoint_features.o: keypoint_features.cpp.o
+.PHONY : keypoint_features.o
 
 # target to build an object file
-compute_features.cpp.o:
-	$(MAKE) -f CMakeFiles/compute_features.dir/build.make CMakeFiles/compute_features.dir/compute_features.cpp.o
-.PHONY : compute_features.cpp.o
+keypoint_features.cpp.o:
+	$(MAKE) -f CMakeFiles/keypoint_features.dir/build.make CMakeFiles/keypoint_features.dir/keypoint_features.cpp.o
+.PHONY : keypoint_features.cpp.o
 
-compute_features.i: compute_features.cpp.i
-.PHONY : compute_features.i
+keypoint_features.i: keypoint_features.cpp.i
+.PHONY : keypoint_features.i
 
 # target to preprocess a source file
-compute_features.cpp.i:
-	$(MAKE) -f CMakeFiles/compute_features.dir/build.make CMakeFiles/compute_features.dir/compute_features.cpp.i
-.PHONY : compute_features.cpp.i
+keypoint_features.cpp.i:
+	$(MAKE) -f CMakeFiles/keypoint_features.dir/build.make CMakeFiles/keypoint_features.dir/keypoint_features.cpp.i
+.PHONY : keypoint_features.cpp.i
 
-compute_features.s: compute_features.cpp.s
-.PHONY : compute_features.s
+keypoint_features.s: keypoint_features.cpp.s
+.PHONY : keypoint_features.s
 
 # target to generate assembly for a file
-compute_features.cpp.s:
-	$(MAKE) -f CMakeFiles/compute_features.dir/build.make CMakeFiles/compute_features.dir/compute_features.cpp.s
-.PHONY : compute_features.cpp.s
+keypoint_features.cpp.s:
+	$(MAKE) -f CMakeFiles/keypoint_features.dir/build.make CMakeFiles/keypoint_features.dir/keypoint_features.cpp.s
+.PHONY : keypoint_features.cpp.s
 
 # Help Target
 help:
@@ -141,12 +141,12 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... compute_features"
 	@echo "... edit_cache"
+	@echo "... keypoint_features"
 	@echo "... rebuild_cache"
-	@echo "... compute_features.o"
-	@echo "... compute_features.i"
-	@echo "... compute_features.s"
+	@echo "... keypoint_features.o"
+	@echo "... keypoint_features.i"
+	@echo "... keypoint_features.s"
 .PHONY : help
 
 

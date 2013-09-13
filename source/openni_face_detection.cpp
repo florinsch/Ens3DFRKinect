@@ -14,6 +14,7 @@
 //#include "pcl/apps/face_detection/face_detection_apps_utils.h"
 #include "openni_frame_source.h"
 #include "face_detection_apps_utils.h"
+
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 

@@ -7,7 +7,7 @@ function labels = patchLabelsFromSOM(data, labels, width, height, gui)
         gui = 0;
     end
     
-    SOM.trainParam.showWindow = gui; % don't display GUI
+    %SOM.trainParam.showWindow = gui; % don't display GUI
     
     SOM = train(SOM, data', 'useParallel', 'yes');
     

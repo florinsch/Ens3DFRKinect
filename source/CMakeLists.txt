@@ -13,10 +13,10 @@ INCLUDE_DIRECTORIES(${PCL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${PCL_LIBRARY_DIRS})
 ADD_DEFINITIONS(${PCL_DEFINITIONS})
 
-#FIND_PACKAGE(Boost 1.45.0 COMPONENTS filesystem regex)
-#IF(Boost_FOUND)
-#    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-#ENDIF()
+FIND_PACKAGE(Boost 1.45.0 COMPONENTS filesystem regex)
+IF(Boost_FOUND)
+    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+ENDIF()
 
 #FIND_PACKAGE(CUDA)
 #INCLUDE(FindCUDA)
@@ -31,8 +31,11 @@ ADD_DEFINITIONS(${PCL_DEFINITIONS})
 #ADD_EXECUTABLE( make_voxel_patches make_voxel_patches.cpp )
 #TARGET_LINK_LIBRARIES( make_voxel_patches ${PCL_LIBRARIES} )
 
-ADD_EXECUTABLE( compute_features compute_features.cpp )
-TARGET_LINK_LIBRARIES( compute_features ${PCL_LIBRARIES} )
+#ADD_EXECUTABLE( compute_features compute_features.cpp )
+#TARGET_LINK_LIBRARIES( compute_features ${PCL_LIBRARIES} )
+
+ADD_EXECUTABLE( keypoint_features keypoint_features.cpp )
+TARGET_LINK_LIBRARIES( keypoint_features ${PCL_LIBRARIES} )
 
 # cuda
 

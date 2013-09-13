@@ -1,7 +1,7 @@
 %% use parallel computing
-matlabpool; %open 2
-ms = MultiStart('UseParallel', 'always');
-opts = statset('UseParallel', true);
+if matlabpool('size') == 0
+    matlabpool open;
+end
 
 %% load data
 clear all; clc;
@@ -15,14 +15,14 @@ else
   importData;
 end
 %% choose dataset and parameters
-wrkData = PFHdata2cm;
-wrkLbls = PFHlbls2cm;
+wrkData = SHOTdata3cm;
+wrkLbls = SHOTlbls3cm;
 
 % number of cells WxH in SOM
-somW = 6;
-somH = 6;
+somW = 4;
+somH = 5;
 % number of clusters
-noClusters = somW * somH;
+noClusters = somW * somH; 
 fprintf('Number of clusters: %d\n', noClusters);
 % -------------------------------------------------------------------------
 % sanity check
@@ -43,7 +43,7 @@ system('find . -path "*patches*" -prune -o -print | grep pcd | wc -l');
 % folder count is 152 and here there are 148 => not unique names for frames
 % generated from c++ => add random number after each frame counter in c++ ! 
 % hack to generate unique frame names (concat frame + class in frame)
-wrkLbls(:, 1) = strcat(wrkLbls(:, 1), wrkLbls(:,3));
+% wrkLbls(:, 1) = strcat(wrkLbls(:, 1), wrkLbls(:,3));
 % -------------------------------------------------------------------------
 % get stats for current dataset
 
@@ -65,7 +65,7 @@ plot(wrkData(1,:));
 %% train SOMs
 wrkLbls = patchLabelsFromSOM(wrkData, wrkLbls, somW, somH);
 %%  K-Means
-wrkLbls = patchLabelsFromKmeans(wrkData, wrkLbls, noClusters);
+[wrkLbls, centroids] = patchLabelsFromKmeans(wrkData, wrkLbls, noClusters);
 %% get class labels from patch grid ordering
 [wrkData, wrkLbls] = patchLabelsFromGrid(wrkData, wrkLbls);
 %% patch labels from uniform random distribution of cluster labels
@@ -117,9 +117,25 @@ for i = 1:noClusters
         'color', [0 0 0], 'marker', 'x', 'linestyle', 'none', 'MarkerSize', 10, 'LineWidth',4);
     hold on;
 end
+%% count number of keypoints for each observation
+tmp = strrep(wrkLbls(:, 1), 'frame', '');
+tmp = strrep(tmp, '-', '');
+data = zeros(1, numel(tmp));
+for i = 1:numel(tmp)
+    data(i) = str2double(tmp{i});
+end
+unq = unique(data);
+countKpts = histc(data, unq);
+
+max(countKpts)
+min(countKpts)
+mean(countKpts)
+figure, histfit(countKpts, 152);
+
 %%  LOOCV
 
 predictEns = [];
+scoresEns = [];
 predictOne = [];
 split = cvpartition(observations, 'leaveout');
 
@@ -143,10 +159,13 @@ parfor i = 1:split.NumTestSets
     % valid clusters
     clusters = unique(cell2mat(trainLbls(:, 4)));
 
+    centroids = 0;
     % train classifiers
     KNNs = ensembleTrainKNN(trainData, trainLbls, noNeighbors, clusters);
     % add predictions [trueClass, voteClass, sumClass]
-    predictEns = [predictEns; ensemblePredictKNN(KNNs, testData, testLbls, classes)];
+    [pred, scores] = ensemblePredictKNN(KNNs, testData, testLbls, classes, centroids);
+    predictEns = [predictEns; pred];
+    scoresEns = [scoresEns; scores];
     
     % train one classifier
     oneKNN = ClassificationKNN.fit(trainData, trainLbls(:, 3), ...

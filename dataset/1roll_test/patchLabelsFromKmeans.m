@@ -1,7 +1,7 @@
-function labels = patchLabelsFromKmeans(data, labels, noclusters)
+function [labels, ctroids] = patchLabelsFromKmeans(data, labels, noclusters)
 fprintf('\nTraining K-Means, k=%i...', noclusters); tic;
 
-lbl = kmeans(data, noclusters, 'replicates', 20, ...
+[lbl, ctroids] = kmeans(data, noclusters, 'replicates', 20, ...
     'options', statset('UseParallel', true ), ...
     'emptyaction', 'drop', 'distance', 'sqeuclidean');
 
